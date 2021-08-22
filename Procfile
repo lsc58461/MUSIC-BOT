@@ -1,1 +1,1 @@
-worker: python NIXBOT.py
+worker: python Main.py
