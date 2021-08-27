@@ -13,6 +13,7 @@ from discord.ext import commands
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
 
+Token = os.environ["Token"]
 
 class VoiceError(Exception):
     pass
@@ -613,4 +614,4 @@ async def botstop(ctx):
     await bot.logout()
     return
 
-bot.run('ODc5MDMzNzQxODE1NzI2MTEw.YSJ19w.q1REPuHAHk1zaNkwnQ3LTYmI7Xc')
+bot.run(Token)
