@@ -350,7 +350,7 @@ class Music(commands.Cog):
 
     def cog_check(self, ctx: commands.Context):
         if not ctx.guild:
-            raise commands.NoPrivateMessage('This command can\'t be used in DM channels.')
+            raise commands.NoPrivateMessage('이 명령은 DM 채널에서 사용할 수 없어요.')
 
         return True
 
@@ -358,7 +358,7 @@ class Music(commands.Cog):
         ctx.voice_state = self.get_voice_state(ctx)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send('An error occurred: {}'.format(str(error)))
+        await ctx.send('오류가 발생했습니다:\n{}'.format(str(error)))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -379,7 +379,6 @@ class Music(commands.Cog):
         ctx.voice_state.voice = await destination.connect()
 
     @commands.command(name='호출', aliases=['summon'])
-    @commands.has_permissions(manage_guild=True)
     async def _summon(self, ctx: commands.Context, *, channel: discord.VoiceChannel = None):
         """음성 채널로 봇을 호출합니다.
         채널이 지정되지 않은 경우 채널에 가입됩니다.
@@ -396,7 +395,6 @@ class Music(commands.Cog):
         ctx.voice_state.voice = await destination.connect()
 
     @commands.command(name='퇴장', aliases=['leave'])
-    @commands.has_permissions(manage_guild=True)
     async def _leave(self, ctx: commands.Context):
         """대기열을 지우고 음성 채널을 종료합니다."""
 
@@ -407,7 +405,6 @@ class Music(commands.Cog):
         del self.voice_states[ctx.guild.id]
 
     @commands.command(name='볼륨', aliases=['volume', 'v'])
-    @commands.is_owner()
     async def _volume(self, ctx: commands.Context, *, volume: int):
         """플레이어의 볼륨을 설정합니다."""
 
@@ -426,7 +423,6 @@ class Music(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='일시정지', aliases=['pause'])
-    @commands.has_permissions(manage_guild=True)
     async def _pause(self, ctx: commands.Context):
         """현재 재생 중인 노래를 일시 중지합니다."""
         print(">>>Pause Command:")
@@ -435,7 +431,6 @@ class Music(commands.Cog):
             await ctx.message.add_reaction('⏯')
 
     @commands.command(name='재개', aliases=['resume', 're', 'res'])
-    @commands.has_permissions(manage_guild=True)
     async def _resume(self, ctx: commands.Context):
         """현재 일시 중지된 노래를 재개합니다."""
 
@@ -444,7 +439,6 @@ class Music(commands.Cog):
             await ctx.message.add_reaction('⏯')
 
     @commands.command(name='중지', aliases=['stop', 's'])
-    @commands.has_permissions(manage_guild=True)
     async def _stop(self, ctx: commands.Context):
         """노래 재생을 중지하고 대기열을 지웁니다."""
 
