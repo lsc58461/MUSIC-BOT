@@ -448,7 +448,7 @@ class Music(commands.Cog):
             ctx.voice_state.voice.stop()
             await ctx.message.add_reaction('⛔')
 
-    @commands.command(name='스킵', aliases=['sk'])
+    @commands.command(name='스킵', aliases=['skip', 'sk'])
     async def _skip(self, ctx: commands.Context):
         """노래 스킵 투표. 요청자는 자동으로 건너뛸 수 있습니다.
         이 노래를 건너뛰려면 3개의 스킵 투표가 필요합니다.
