@@ -140,14 +140,14 @@ class YTDLSource(discord.PCMVolumeTransformer):
             count += 1
             e_list.append(e)
 
-        lst.append('\n**선택할 숫자를 입력하고 종료하려면 `취소`를 입력하십시오.**')
+        lst.append('\n**선택할 숫자를 입력하고 종료하려면 `취소` 또는 `종료`를 입력하십시오.**')
         self.search["description"] = "\n".join(lst)
 
         em = discord.Embed.from_dict(self.search)
         await ctx.send(embed=em, delete_after=45.0)
 
         def check(msg):
-            return msg.content.isdigit() == True and msg.channel == channel or msg.content == '취소' or msg.content == '취소'
+            return msg.content.isdigit() == True and msg.channel == channel or msg.content == '취소' or msg.content == '종료'
 
         try:
             m = await self.bot.wait_for('message', check=check, timeout=45.0)
@@ -170,7 +170,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 else:
                     rtrn = 'sel_invalid'
             elif m.content == '취소':
-                rtrn = '취소'
+                rtrn = 'cancel'
+            elif m.content == '종료':
+                rtrn = 'cancel'
             else:
                 rtrn = 'sel_invalid'
 
@@ -414,7 +416,7 @@ class Music(commands.Cog):
         if 0 > volume > 100:
             return await ctx.send('볼륨은 0 ~ 100 사이여야 해요!')
         ctx.voice_client.source.volume = volume / 100
-        await ctx.send('볼륨을 `{}%`로 조정했어요.'.format({ctx.voice_client.source.volume * 100}))
+        await ctx.send('볼륨을 `{}%`로 조정했어요.'.format(ctx.voice_client.source.volume * 100))
 
     @commands.command(name='재생정보', aliases=['now', 'np'])
     async def _now(self, ctx: commands.Context):
@@ -533,34 +535,12 @@ class Music(commands.Cog):
 
     @commands.command(name='재생', aliases=['play', 'p'])
     async def _play(self, ctx: commands.Context, *, search: str):
-        """Plays a song.
-        If there are songs in the queue, this will be queued until the
-        other songs finished playing.
-        This command automatically searches from various sites if no URL is provided.
-        A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
+        """노래를 재생합니다.
+        대기열에 노래가 있는 경우 다른 노래가 재생될 때까지 대기열에 있습니다.
+        이 명령은 URL이 제공되지 않으면 다양한 사이트에서 자동으로 검색합니다.
+        이 사이트들의 목록은 https://rg3.github.io/youtube-dl/supportedsites.html 에서 찾을 수 있습니다.
         """
 
-        async with ctx.typing():
-            try:
-                source = await YTDLSource.search_source(ctx, search, loop=self.bot.loop, bot=self.bot)
-            except YTDLError as e:
-                await ctx.send('이 요청을 처리하는 동안 오류가 발생했습니다.: {}'.format(str(e)))
-            else:
-                if not ctx.voice_state.voice:
-                    await ctx.invoke(self._join)
-
-                song = Song(source)
-                await ctx.voice_state.songs.put(song)
-                await ctx.send('`{}` 노래를 지금 재생할게요!'.format(str(source)))
-
-    @commands.command(name='검색', aliases=['search'])
-    async def _search(self, ctx: commands.Context, *, search: str):
-        """Searches youtube.
-        It returns an imbed of the first 10 results collected from youtube.
-        Then the user can choose one of the titles by typing a number
-        in chat or they can cancel by typing "cancel" in chat.
-        Each title in the list can be clicked as a link.
-        """
         async with ctx.typing():
             try:
                 source = await YTDLSource.search_source(ctx, search, loop=self.bot.loop, bot=self.bot)
@@ -569,7 +549,7 @@ class Music(commands.Cog):
             else:
                 if source == 'sel_invalid':
                     await ctx.send('잘못된 선택입니다.')
-                elif source == '취소':
+                elif source == 'cancel':
                     await ctx.send('👌')
                 elif source == 'timeout':
                     await ctx.send(':alarm_clock: **시간이 초과되었어요.**')
@@ -579,8 +559,8 @@ class Music(commands.Cog):
 
                     song = Song(source)
                     await ctx.voice_state.songs.put(song)
-                    await ctx.send('Enqueued {}'.format(str(source)))
-            
+                    await ctx.send('`{}` 노래를 지금 재생할게요!'.format(str(source)))
+
     @_join.before_invoke
     @_play.before_invoke
     async def ensure_voice_state(self, ctx: commands.Context):
@@ -594,10 +574,15 @@ class Music(commands.Cog):
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 bot.add_cog(Music(bot))
+status = itertools.cycle(['Produced By JeongYun','Playing Music'])
 
+@tasks.loop(seconds=3)
+async def change_status():
+    await bot.change_presence(status = discord.Status.online, activity = discord.Game(next(status)))
 
 @bot.event
 async def on_ready():
+    change_status.start()
     print('클라이언트로 로그인했습니다:\n{0.user.name}\n{0.user.id}'.format(bot))
 
 @bot.command(name='서버종료', aliases=['server_stop'])
