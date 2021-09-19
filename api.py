@@ -5,7 +5,7 @@ def Rank(search='hide on bush'):
     try:
         Read_Json = requests.get(f"{URL}{search}").json()
         print(Read_Json)
-        if Read_Json['error'] == True:
+        if 'error' in Read_Json:
             if Read_Json['error']['code'] == 0:
                 return '예기치 않은 내부 서버 오류입니다.', None
             elif Read_Json['error']['code'] == 1:
@@ -40,7 +40,7 @@ def Normal(search='hide on bush'):
     try:
         Read_Json = requests.get(f"{URL}{search}").json()
         print(Read_Json)
-        if Read_Json['error'] == True:
+        if 'error' in Read_Json:
             if Read_Json['error']['code'] == 0:
                 return '예기치 않은 내부 서버 오류입니다.', None
             elif Read_Json['error']['code'] == 1:
@@ -75,7 +75,7 @@ def ARAM(search='hide on bush'):
     try:
         Read_Json = requests.get(f"{URL}{search}").json()
         print(Read_Json)
-        if Read_Json['error'] == True:
+        if 'error' in Read_Json:
             if Read_Json['error']['code'] == 0:
                 return '예기치 않은 내부 서버 오류입니다.', None
             elif Read_Json['error']['code'] == 1:
