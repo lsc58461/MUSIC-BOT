@@ -571,7 +571,7 @@ class Music(commands.Cog):
         if ctx.voice_client:
             if ctx.voice_client.channel != ctx.author.voice.channel:
                 raise commands.CommandError('봇이 이미 음성 채널에 있습니다!')
-
+    """
     @commands.command(name='mmr')
     async def _MMR(self, ctx: commands.Context, *, search: str):
         async with ctx.typing():
@@ -584,7 +584,7 @@ class Music(commands.Cog):
                 .add_field(name='무작위 총력전', value='```css\n{}\n```'.format(_ARAM[0]), inline = False)
                 .set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url))
             await ctx.send(embed=embed)
-            
+    """         
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 bot.add_cog(Music(bot))
 status = itertools.cycle(['Produced By JeongYun','Playing Music'])
