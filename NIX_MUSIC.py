@@ -196,10 +196,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
             if seconds > 0:
                 duration.append('{}'.format(seconds))
             
-            value = ':'.join(duration)
-            
             duration.append('분')
-            value = ''.join(duration)
+            value = ':'.join(duration)
             
         elif duration == 0:
             value = "LIVE"
