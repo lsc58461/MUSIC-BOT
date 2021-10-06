@@ -195,8 +195,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 duration.append('{}'.format(minutes))
             if seconds > 0:
                 duration.append('{}'.format(seconds))
-            
-            duration.append('분')
+                
             value = ':'.join(duration)
             
         elif duration == 0:
