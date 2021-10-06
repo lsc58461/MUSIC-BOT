@@ -9,7 +9,6 @@ import youtube_dl
 
 from async_timeout import timeout
 from discord.ext import commands, tasks
-from api import Rank, Normal, ARAM
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -195,7 +194,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 duration.append('{}'.format(minutes))
             if seconds > 0:
                 duration.append('{}'.format(seconds))
-                
+
             value = ':'.join(duration)
             
         elif duration == 0:
@@ -372,7 +371,6 @@ class Music(commands.Cog):
 
     @commands.command(name='입장', aliases=['join'], invoke_without_subcommand=True)
     async def _join(self, ctx: commands.Context):
-        """Joins a voice channel."""
 
         destination = ctx.author.voice.channel
         if ctx.voice_state.voice:
@@ -383,9 +381,6 @@ class Music(commands.Cog):
 
     @commands.command(name='호출', aliases=['summon'])
     async def _summon(self, ctx: commands.Context, *, channel: discord.VoiceChannel = None):
-        """음성 채널로 봇을 호출합니다.
-        채널이 지정되지 않은 경우 채널에 가입됩니다.
-        """
 
         if not channel and not ctx.author.voice:
             raise VoiceError('음성 채널에 입장해주세요!')
@@ -399,7 +394,6 @@ class Music(commands.Cog):
 
     @commands.command(name='퇴장', aliases=['leave'])
     async def _leave(self, ctx: commands.Context):
-        """대기열을 지우고 음성 채널을 종료합니다."""
 
         if not ctx.voice_state.voice:
             return await ctx.send('음성 채널에 입장해주세요!')
@@ -409,7 +403,6 @@ class Music(commands.Cog):
 
     @commands.command(name='볼륨', aliases=['volume', 'v'])
     async def _volume(self, ctx: commands.Context, *, volume: int):
-        """플레이어의 볼륨을 설정합니다."""
 
         if not ctx.voice_state.is_playing:
             return await ctx.send('현재 재생 중인 항목이 없어요.')
@@ -421,13 +414,13 @@ class Music(commands.Cog):
 
     @commands.command(name='재생정보', aliases=['now', 'np'])
     async def _now(self, ctx: commands.Context):
-        """현재 재생 중인 노래를 표시합니다."""
+
         embed = ctx.voice_state.current.create_embed()
         await ctx.send(embed=embed)
 
     @commands.command(name='일시정지', aliases=['pause'])
     async def _pause(self, ctx: commands.Context):
-        """현재 재생 중인 노래를 일시 중지합니다."""
+
         print(">>>Pause Command:")
         if ctx.voice_state.is_playing and ctx.voice_state.voice.is_playing():
             ctx.voice_state.voice.pause()
@@ -435,7 +428,6 @@ class Music(commands.Cog):
 
     @commands.command(name='재개', aliases=['resume', 're', 'res'])
     async def _resume(self, ctx: commands.Context):
-        """현재 일시 중지된 노래를 재개합니다."""
 
         if ctx.voice_state.is_playing and ctx.voice_state.voice.is_paused():
             ctx.voice_state.voice.resume()
@@ -443,7 +435,6 @@ class Music(commands.Cog):
 
     @commands.command(name='중지', aliases=['stop', 's'])
     async def _stop(self, ctx: commands.Context):
-        """노래 재생을 중지하고 대기열을 지웁니다."""
 
         ctx.voice_state.songs.clear()
 
@@ -453,9 +444,6 @@ class Music(commands.Cog):
 
     @commands.command(name='스킵', aliases=['skip', 'sk'])
     async def _skip(self, ctx: commands.Context):
-        """노래 스킵 투표. 요청자는 자동으로 건너뛸 수 있습니다.
-        이 노래를 건너뛰려면 3개의 스킵 투표가 필요합니다.
-        """
 
         if not ctx.voice_state.is_playing:
             return await ctx.send('재생 중인 노래가 없어요.')
@@ -480,9 +468,6 @@ class Music(commands.Cog):
 
     @commands.command(name="대기열", aliases=['queue', 'q'])
     async def _queue(self, ctx: commands.Context, *, page: int = 1):
-        """플레이어의 대기열을 표시합니다.
-        선택적으로 표시할 페이지를 지정할 수 있습니다. 각 페이지에는 10개의 요소가 있습니다.
-        """
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('대기열이 없습니다.')
@@ -503,7 +488,6 @@ class Music(commands.Cog):
 
     @commands.command(name="셔플", aliases=['shuffle', 'sp'])
     async def _shuffle(self, ctx: commands.Context):
-        """Shuffles the queue."""
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('대기열이 없습니다.')
@@ -513,7 +497,6 @@ class Music(commands.Cog):
 
     @commands.command(name='제거', aliases=['remove'])
     async def _remove(self, ctx: commands.Context, index: int):
-        """대기열에서 지정된 인덱스의 노래를 제거합니다."""
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('대기열이 없습니다.')
@@ -523,9 +506,6 @@ class Music(commands.Cog):
 
     @commands.command(name='반복재생', aliases=['loop'])
     async def _loop(self, ctx: commands.Context):
-        """현재 재생 중인 곡을 루프합니다.
-        이 명령을 다시 호출하여 노래를 풉니다.
-        """
 
         if not ctx.voice_state.is_playing:
             return await ctx.send('재생 중인 곡이 없습니다.')
@@ -536,11 +516,6 @@ class Music(commands.Cog):
 
     @commands.command(name='재생', aliases=['play', 'p'])
     async def _play(self, ctx: commands.Context, *, search: str):
-        """노래를 재생합니다.
-        대기열에 노래가 있는 경우 다른 노래가 재생될 때까지 대기열에 있습니다.
-        이 명령은 URL이 제공되지 않으면 다양한 사이트에서 자동으로 검색합니다.
-        이 사이트들의 목록은 https://rg3.github.io/youtube-dl/supportedsites.html 에서 찾을 수 있습니다.
-        """
 
         async with ctx.typing():
             try:
@@ -571,20 +546,7 @@ class Music(commands.Cog):
         if ctx.voice_client:
             if ctx.voice_client.channel != ctx.author.voice.channel:
                 raise commands.CommandError('봇이 이미 음성 채널에 있습니다!')
-    """
-    @commands.command(name='mmr')
-    async def _MMR(self, ctx: commands.Context, *, search: str):
-        async with ctx.typing():
-            _Rank = Rank(search)
-            _Normal = Normal(search)
-            _ARAM = ARAM(search)
-            embed = (discord.Embed(title='소환사 정보', description='```css\n{}\n```'.format(search), color=discord.Color.blurple())
-                .add_field(name='솔로랭크', value='```css\n{}\n```'.format(_Rank[0]), inline = False)
-                .add_field(name='노말', value='```css\n{}\n```'.format(_Normal[0]), inline = False)
-                .add_field(name='무작위 총력전', value='```css\n{}\n```'.format(_ARAM[0]), inline = False)
-                .set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url))
-            await ctx.send(embed=embed)
-    """         
+
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 bot.add_cog(Music(bot))
 status = itertools.cycle(['Produced By JeongYun','Playing Music'])
