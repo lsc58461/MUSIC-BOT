@@ -40,7 +40,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
     FFMPEG_OPTIONS = {
         'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-        'options': '-vn',
+        'options': '-vn -4',
     }
 
     ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
