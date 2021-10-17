@@ -36,12 +36,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'no_warnings': True,
         'default_search': 'ytsearch',
         'source_address': '0.0.0.0',
-        'force-ipv4': True,
+        'force-ipv6': True,
     }
 
     FFMPEG_OPTIONS = {
         'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-        'options': '-vn -4',
+        'options': '-vn -6',
     }
 
     ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
