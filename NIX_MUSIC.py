@@ -185,24 +185,38 @@ class YTDLSource(discord.PCMVolumeTransformer):
             minutes, seconds = divmod(duration, 60)
             hours, minutes = divmod(minutes, 60)
             days, hours = divmod(hours, 24)
-
+            
             duration = []
+            
             if days > 0:
-                duration.append('{}'.format(days))
+                duration.append('%d일' % days)
             if hours > 0:
-                duration.append('{}'.format(hours))
+                duration.append('%d시간' % hours)
             if minutes > 0:
-                duration.append('{}'.format(minutes))
+                duration.append('%d분' % minutes)
             if seconds > 0:
-                duration.append('{}'.format(seconds))
-
-            value = ':'.join(duration)
+                duration.append('%d초' % seconds)
+                
+            value = ' '.join(duration)
             
         elif duration == 0:
             value = "LIVE"
-        
+        elif duration < 60:
+            value = '%d초' % duration
+        elif duration < 3600:
+            minutes, seconds = divmod(duration, 60)
+            value = '%d분 %d초' % (minutes, seconds)
+        elif duration < 86400:
+            hours, minutes = divmod(duration, 3600)
+            minutes, seconds = divmod(minutes, 60)
+            value = '%d시간 %d분 %d초' % (hours, minutes, seconds)
+        else:
+            days, hours = divmod(duration, 86400)
+            hours, minutes = divmod(hours, 3600)
+            minutes, seconds = divmod(minutes, 60)
+            value = '%d일 %d시간 %d분 %d초' % (days, hours, minutes, seconds)
+            
         return value
-
 
 class Song:
     __slots__ = ('source', 'requester')
